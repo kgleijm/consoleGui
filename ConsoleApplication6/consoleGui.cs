@@ -1,15 +1,13 @@
 ﻿using System;
 
 public static class consoleGui
+        
         {
             
             //method that will create a choice dialog
             public static string openQuestion(string question, string[]? checks, string? negativeResponse)
             {
-                if (question == null) throw new ArgumentNullException(nameof(question));
-                if (checks == null) throw new ArgumentNullException(nameof(checks));
-                if (negativeResponse == null) throw new ArgumentNullException(nameof(negativeResponse));
-                string output = "";
+                 string output = "";
                  
                 //base output: 
                 if (checks == null && negativeResponse == null)
@@ -126,9 +124,48 @@ public static class consoleGui
                 }//end of mpq while(true) loop
             }// end of mpq method
 
+            public static int getInteger(string question)
+            {
+                Console.Out.WriteLine("\n" + question);
+                
+                
+                while(true){
+                    string input = Console.ReadLine();
+                    
+                    //create escape
+                    if (input.Equals("exit"))
+                    {
+                        return int.MinValue;
+                    }
+
+                    if (int.TryParse(input, out int output))
+                    {
+                        return output;
+                    }
+                    else
+                    {
+                        Console.Out.WriteLine("That's not a valid aswer, please try again" +
+                                              "\nor type exit to go back");
+                    }
+                }
+            }
+
             public static void debugLine(string line)
             {
                 Console.Out.WriteLine("# DEBUG #" + line);
             }
+
+            public static bool noErrorsInValue(params string[] values)
+            {
+                foreach (var value in values)
+                {
+                    if (value.Equals("ERROR") || value.Equals("-1"))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            
             
         }
