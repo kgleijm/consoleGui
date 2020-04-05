@@ -1,14 +1,12 @@
 ﻿using System;
 
-public static class consoleGui
-        
+public static class ConsoleGui
         {
-            
             //method that will create a choice dialog
             public static string openQuestion(string question, string[]? checks, string? negativeResponse)
             {
-                 string output = "";
-                 
+                string output = "";
+
                 //base output: 
                 if (checks == null && negativeResponse == null)
                 {
@@ -28,13 +26,13 @@ public static class consoleGui
                     {
                         output = Console.ReadLine();
                         bool satisfactitory = true;
-                        
+
                         //exit if exit command is given
                         if (output.Equals("exit"))
                         {
                             return "ERROR";
                         }
-                        
+
                         //loop throught the checks and see if they're met
                         foreach (string check in checks)
                         {
@@ -50,7 +48,7 @@ public static class consoleGui
                         {
                             return output;
                         }
-                        else if(negativeResponse != null)
+                        else if (negativeResponse != null)
                         {
                             Console.Out.WriteLine(negativeResponse);
                             Console.Out.WriteLine("try again or type exit if you don't know");
@@ -59,50 +57,60 @@ public static class consoleGui
                         {
                             Console.Out.WriteLine("that's not right, try again or type exit if you don't know");
                         }
-                        
                     }
                 }
-                
-                
 
-                
+
                 return output;
             }
+            
 
             //shorthand way of above method for no checks
             public static string openQuestion(string question)
             {
                 return openQuestion(question, null, null);
             }
-
-            //method that returns an int corresponding to answer given
-            //returns -1 when exited by exit option
-            public static int multipleChoice(string question,params string[] options)
+            
+            public static int multipleChoice(string question, params string[] options)
             {
                 Console.Out.WriteLine("\n" + question);
                 while (true)
                 {
-                    
                     //list all possible inputs and prepare for answer
                     string[] possibleInputs = new string[options.Length];
-                    for(int i = 0; i < options.Length; i++)
+                    for (int i = 0; i < options.Length; i++)
                     {
-                        //distill info
                         string option = options[i];
-                        string newAns = option.Substring(0, 1).ToUpper();
-                        string firstChar = option.Substring(1, 1).ToUpper();
-                        string listOption = "[" + newAns + "]" + " " + firstChar + option.Substring(2);
+                        
+                        //count how many numeral chars are in this possible answer to account for inputs beginning with numbers
+                        int lenghtOfExpectedUserInput = 1;
+                        for (int j = 0; j < option.Length; j++)
+                        {
+                            if (!Char.IsDigit(option[j]))
+                            {
+                                break;
+                            }
+                            else if(j+1 > lenghtOfExpectedUserInput)
+                            {
+                                lenghtOfExpectedUserInput = j+1;
+                            }
+                        }
+                        
+                        //distill info
+                        string newAns = option.Substring(0, lenghtOfExpectedUserInput).ToUpper();
+                        string firstChar = option.Substring(lenghtOfExpectedUserInput, 1).ToUpper();
+                        string listOption = "[" + newAns + "]" + " " + firstChar + option.Substring(lenghtOfExpectedUserInput+1);
 
                         //list option and save possible answer
                         possibleInputs[i] = newAns;
                         Console.Out.WriteLine(listOption);
                     }
-                    
+
                     //add exit for escape
                     Console.Out.WriteLine("[X] Exit\n");
                     string ans = Console.ReadLine().ToUpper();
-                    
-                    
+
+
                     //get and check answer against possible answers
                     if (ans.Equals("X"))
                     {
@@ -117,21 +125,21 @@ public static class consoleGui
                                 return i;
                             }
                         }
+
                         Console.Out.WriteLine("Thats not an option, type \"X\" if you don't know");
                     }
-                    
-                    
-                }//end of mpq while(true) loop
-            }// end of mpq method
-
+                }
+            } 
+            
             public static int getInteger(string question)
             {
                 Console.Out.WriteLine("\n" + question);
-                
-                
-                while(true){
+
+
+                while (true)
+                {
                     string input = Console.ReadLine();
-                    
+
                     //create escape
                     if (input.Equals("exit"))
                     {
@@ -167,5 +175,41 @@ public static class consoleGui
                 return true;
             }
             
+            
+            public abstract class Element
+            {
+                public abstract void list();
+
+                public abstract string getMPQListing();
+
+            }
+
+            public static Element getElementByMultipleChoice(String question, List<Element> inputList)
+            {
+                // extract possible ans as string from elements
+                string[] elements = new string[inputList.Count];
+                for (int i = 0; i < elements.Length; i++)
+                {
+                    elements[i] = i + inputList[i].getMPQListing();
+                }
+
+                int ans = multipleChoice(question, elements);
+
+                if (ans >= 0)
+                {
+                    return inputList[ans];
+                }
+                return null;
+            }
+
+            public static Element getElementByMultipleChoice(String question, Dictionary<string, Element> inputDict)
+            {
+                return getElementByMultipleChoice(question, inputDict.Values.ToList());
+            }
+            
+            public static Element getElementByMultipleChoice(String question, Element[] inputArray)
+            {
+                return getElementByMultipleChoice(question, inputArray.ToList());
+            }
             
         }
