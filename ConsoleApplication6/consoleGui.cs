@@ -212,4 +212,28 @@ public static class ConsoleGui
                 return getElementByMultipleChoice(question, inputArray.ToList());
             }
             
+            
+            public static void list(IEnumerable iterable)
+            {
+
+                
+                if (iterable is IDictionary)
+                {
+                    IDictionary dict = (IDictionary) iterable;
+                    foreach (Element element in dict.Values)
+                    {
+                        element.list();
+                    }
+                }
+                else
+                {
+                    foreach (Element element in (IEnumerable)iterable)
+                    {
+                        element.list();
+                    }
+                }
+                
+                
+            }
+            
         }
